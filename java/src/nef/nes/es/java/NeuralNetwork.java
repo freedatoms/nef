@@ -1,0 +1,73 @@
+package nef.nes.es.java;
+
+public class NeuralNetwork {
+    protected double weights[];
+    protected int layers[];
+    protected int[] ls;
+    protected int maxLayerSize;
+    public NeuralNetwork(int layers[]) {
+        this.layers = layers;
+        ls = new int[layers.length];
+        int weightsVectorLength=0;
+        maxLayerSize = 0;
+        int prevLayer = 0;
+        int j = 0;
+        for (int i: layers){
+            maxLayerSize = Math.max(i,maxLayerSize);
+            weightsVectorLength+=(prevLayer) * i; // (prevLayer)*sizeof(layer)
+            ls[j] = weightsVectorLength;
+            prevLayer = 1+i;
+            j++;
+        }
+        maxLayerSize++;
+        weights = new double[weightsVectorLength];
+    }
+
+    public NeuralNetwork clone(){
+        NeuralNetwork net = new NeuralNetwork(layers);
+        net.setWeights(weights.clone());
+        return net;
+    }
+
+    public double activationFunction(double d){
+        return Math.tanh(d);
+    }
+
+
+    public double [] evaluate(double inputs[]){
+        int layerStart = 0;
+        int prevLayerSize=layers[0]+1;
+        double results[] = new double[maxLayerSize];
+        double tmp[] = new double[maxLayerSize];
+        results[0] = 1;
+        if (maxLayerSize<= inputs.length)
+            throw new ArrayIndexOutOfBoundsException("Vice vstupu nez neuronu ve vstupni vrstve");
+        System.arraycopy(inputs,0,results,1,inputs.length);
+        for(int i=1;i<layers.length;i++){
+            tmp[0] = 1;
+            for (int j = 0; j < layers[i]; j++) { // res
+                tmp[1+j]  = 0;
+                for (int k = 0; k < prevLayerSize; k++) { //weights
+                //    System.out.println("results["+k+"] = " + results[k]+";  weights["+(layerStart+k+j*prevLayerSize)+"] = "+weights[layerStart+k+j*prevLayerSize]);
+                    tmp[1+j] += results[k] * weights[layerStart+k+j*prevLayerSize];
+                }
+                tmp[1+j] = activationFunction(tmp[1+j]);
+            }
+            prevLayerSize=layers[i]+1;
+            layerStart=ls[i];
+          //  System.out.println("ls:" + layerStart);
+            System.arraycopy(tmp, 0, results, 0, layers[i] + 1);
+        }
+        double d[]= new double[layers[layers.length-1]];
+        System.arraycopy(results,1,d,0,layers[layers.length-1]);
+        return d;
+    }
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;
+    }
+}

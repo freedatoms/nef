@@ -1,0 +1,14 @@
+(ns nef.nes.ce.tree-test
+  (:gen-class)
+  (:require [nef.nes.ce
+             [tree :as t]])
+  (:use clojure.test))
+
+
+(deftest generate-tree
+  (testing "Tree generation"
+    (testing "whether generate-tree generates exactly n nodes"
+      (dotimes [n 14]
+        (dotimes [x 100]
+          (is (= (inc n) (-> (t/generate-tree (inc n)) flatten count))))))))
+

@@ -1,0 +1,27 @@
+(ns cega.cellular-encoding-test
+  (:use clojure.test
+        [cega.cellular-encoding :as ce])
+  (:require [clojure [zip :as z]]))
+
+(deftest grammar-tree-ops
+  (testing "Grammar tree operations"
+    (let [test-tree {:gr (z/down (z/seq-zip
+                                  '(seq (par (par (incbias) (decbias)) (end)) (end))))}]
+      (is (= 'seq (z/node (:gr test-tree))))
+      (is (= 'par (z/node (#'ce/left-subtree test-tree))))
+      (is (= 'end (z/node (#'ce/right-subtree test-tree)))))))
+
+(deftest replace-in-vector,
+  (testing "replace-in-vector"
+    (let [v [:a :b :c :d :e :f]
+          riv #'ce/replace-in-vector]
+      (is (= [:a :b :c :d :e :l :r] (riv v  :f [:l :r])))
+      (is (= [:a :b :c :d :l :r :f] (riv v  :e [:l :r])))
+      (is (= [:a :b :c :l :r :e :f] (riv v  :d [:l :r])))
+      (is (= [:a :b :l :r :d :e :f] (riv v  :c [:l :r])))
+      (is (= [:a :l :r :c :d :e :f] (riv v  :b [:l :r])))
+      (is (= [:l :r :b :c :d :e :f] (riv v  :a [:l :r]))))))
+
+
+
+

@@ -1,0 +1,93 @@
+package nef.nes.es.java;
+
+import java.util.Arrays;
+import java.util.Random;
+
+public class Individual {
+    protected double std[];
+    protected NeuralNetwork net;
+    private double fitness;
+    private double successRate;
+    protected Evolution evo;
+    public Individual(int layers[], Evolution e) {
+        net = new NeuralNetwork(layers);
+        std = new double[net.getWeights().length];
+        Arrays.fill(std,1);
+        evo = e;
+        countFitness();
+    }
+
+    public Individual(int layers[], double weights[], Evolution e) {
+        net = new NeuralNetwork(layers);
+        net.setWeights(weights);
+        std = new double[net.getWeights().length];
+        Arrays.fill(std,1);
+        evo = e;
+        countFitness();
+    }
+
+    public Individual(int layers[], double weights[], double std[], Evolution e) {
+        net = new NeuralNetwork(layers);
+        net.setWeights(weights);
+        this.std = std;
+        evo = e;
+        countFitness();
+    }
+
+    public Individual(NeuralNetwork network, double var[], Evolution e){
+        std = var;
+        net = network;
+        evo = e;
+        countFitness();
+    }
+
+    public Individual clone(){
+        Individual newI = new Individual(net.clone(), std.clone(), evo);
+        return newI;
+    }
+
+    public double[] evaluate(double[] inputs){
+        return net.evaluate(inputs);
+    }
+
+    public double[] evaluate(Double[] inputs){
+        double[] dbs = new double[inputs.length];
+	for (int i = 0; i<inputs.length; i++){
+	    dbs[i] = (double)inputs[i];
+	}
+	return net.evaluate(dbs);
+    }
+
+    protected void countFitness(){
+        fitness = evo.getFitnessFunction().countFitness(this);
+	successRate = evo.getFitnessFunction().countSuccessRate(this);
+    }
+
+    public double getFitness(){
+        return fitness;
+    }
+
+    public double getSuccessRate(){
+        return successRate;
+    }
+
+    public Individual mutate(){
+        Random r = new Random();
+        for (int i = 0; i < net.getWeights().length; i++){
+            net.getWeights()[i] += r.nextGaussian()* std[i];
+        }
+        countFitness();
+        return this;
+    }
+
+    public Individual simpleMutation(double sigma){
+        Random r = new Random();
+        for (int i = 0; i < net.getWeights().length; i++){
+            net.getWeights()[i] += r.nextGaussian()* sigma;
+        }
+        countFitness();
+        return this;
+    }
+
+
+}
