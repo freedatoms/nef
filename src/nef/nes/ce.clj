@@ -62,7 +62,7 @@
   [ce run-params]
   (let [dataset (c/to-matrix (:data (:problem-domain ce)))
         input   (c/to-vect  (c/sel dataset :cols (:input-cols (:problem-domain ce))))
-        output  (let [data (c/to-vect (c/sel dataset :cols 
+        output (let [data (c/to-vect (c/sel dataset :cols 
                                              (:output-cols (:problem-domain ce))))]
                   (if (seq? (first data))
                     (mapv min-max-normalize-column data)
@@ -74,7 +74,7 @@
   (run-custom-fitness* 
    ce
    run-params
-   ((:fitness-function run-params)
+   ((:fitness-function (:problem-domain ce)
     nn/evaluate-ff-net-cell)))
 
 (defn- run-maze

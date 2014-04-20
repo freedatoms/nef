@@ -21,11 +21,12 @@ public class DiscreteMazeViewer extends JPanel {
         Actor a = dmaze.getNewActor();
         int sp = dmaze.shortestPathToTarget(a.getX(),a.getY());
         for (int j = 0; j < sp * 10; j++) {
-            MoveAction ma = getMoveAction((double[])i.invoke(new Double[]{(double)j,
-                                                                          ((double)dmaze.shortestPathToTarget(a.getX(),a.getY())),
-                                                                          dmaze.lookForward(a)=='w'?0.0:1.0,
-                                                                          dmaze.lookLeft(a)=='w'?0.0:1.0,
-                                                                          dmaze.lookRight(a)=='w'?0.0:1.0
+            MoveAction ma = getMoveAction((double[])i.invoke(new Double[]{
+			(double)j/((double)10*sp),
+			((double)dmaze.shortestPathToTarget(a.getX(),a.getY()))/((double)sp),
+			dmaze.lookForward(a)=='w'?0.0:1.0,
+			dmaze.lookLeft(a)=='w'?0.0:1.0,
+			dmaze.lookRight(a)=='w'?0.0:1.0
                     }));
             actions.add(ma);
             if (dmaze.move(a,ma)){

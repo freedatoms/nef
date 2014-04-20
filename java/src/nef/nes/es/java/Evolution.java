@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
-import clojure.lang.AFn;
+import clojure.lang.IFn;
 import java.lang.Math;
 
 public class Evolution {
@@ -136,7 +136,7 @@ public class Evolution {
         return genome;
     }
 
-    public double[] evolve(int generations, int mu, int rho, int lambda, boolean commaSelectionp, Logger log){
+    public double[] evolve(int generations, int mu, int rho, int lambda, boolean commaSelectionp, Logger log, IFn bestIndFunc){
         Individual inds []= new Individual[mu];
         Individual newInds [] = new Individual[lambda];
 
@@ -159,6 +159,7 @@ public class Evolution {
 
             max = Math.max(max, inds[0].getSuccessRate());
 	    maxA[i] = max;
+	    bestIndFunc.invoke(i, inds[0]);
 	    double median=((inds[(int)(Math.floor(mu/2.0))].getSuccessRate() + 
 			    inds[(int)(Math.ceil(mu/2.0))].getSuccessRate()) / 2.0);
 	    log.log(i,
