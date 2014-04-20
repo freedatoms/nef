@@ -14,12 +14,13 @@
       clojure.string/capitalize))
 
 (defn make-classification-of 
-  [name dataset input-cols output-cols]
+  [name dataset input-cols output-cols &{:keys [decrease-outputs]}]
   {:type :classification,
    :name name,
    :data dataset,
    :input-cols input-cols,
-   :output-cols output-cols})
+   :output-cols output-cols,
+   :decrease-outputs decrease-outputs})
 
 (defn make-regression-of 
   [name dataset input-cols output-cols]

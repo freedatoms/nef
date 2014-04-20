@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 import clojure.lang.AFn;
-
+import java.lang.Math;
 
 public class Evolution {
     protected int layers[];
@@ -19,6 +19,14 @@ public class Evolution {
         this.fitnessFunction = fitnessFunction;
         this.layers = layers;
         this.rand = new Random();
+    }
+
+    private double getAvgPerformance(Individual[] pop){
+	double sum = 0.0;
+	for (int i = 0; i < pop.length; i++){
+	    sum += pop[i].getSuccessRate();
+	}
+	return sum/pop.length;
     }
 
     protected Individual[] marriage(Individual[] pop,int rho /*Family size*/){
@@ -128,7 +136,7 @@ public class Evolution {
         return genome;
     }
 
-    public double[] evolve(int generations, int mu, int rho, int lambda, boolean commaSelectionp){
+    public double[] evolve(int generations, int mu, int rho, int lambda, boolean commaSelectionp, Logger log){
         Individual inds []= new Individual[mu];
         Individual newInds [] = new Individual[lambda];
 
@@ -151,6 +159,14 @@ public class Evolution {
 
             max = Math.max(max, inds[0].getSuccessRate());
 	    maxA[i] = max;
+	    double median=((inds[(int)(Math.floor(mu/2.0))].getSuccessRate() + 
+			    inds[(int)(Math.ceil(mu/2.0))].getSuccessRate()) / 2.0);
+	    log.log(i,
+		    inds[0].getSuccessRate(),
+		    inds[mu-1].getSuccessRate(),
+		    getAvgPerformance(inds),
+		    median,
+		    max);
             System.out.printf("Generation %5d\tbest: %1.4f\tworst: %1.4f\tmax success rate: %1.4f\n",i,inds[0].getFitness(),inds[mu-1].getFitness(),max);
         }
         return maxA;

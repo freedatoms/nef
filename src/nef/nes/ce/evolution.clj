@@ -50,7 +50,7 @@
                                   :performance (:fitness (first @cur-pop)),
                                   :max-performance (:fitness (first @cur-pop))
                                   :mean-performance(float (reduce + (mapv #(/ (:fitness %) N-inds) @cur-pop))),
-                                  :worst-performance (:fitness (last @cur-pop)),
+                                  :min-performance (:fitness (last @cur-pop)),
                                   :best-genome-length (count (flatten (:genome (first @cur-pop)))),
                                   :mean-genome-length (float (reduce + (mapv #(/ (count (flatten (:genome %))) N-inds) @cur-pop)))})
               (with-precision 5

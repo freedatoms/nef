@@ -51,9 +51,11 @@
   [ce run-params]
   (let [dataset (c/to-matrix (:data (:problem-domain ce)))
         input (c/to-vect  (c/sel dataset :cols (:input-cols (:problem-domain ce))))
-        output  (mapv #(int %)
-                      (c/to-vect
-                       (c/sel dataset :cols (:output-cols (:problem-domain ce)))))]
+        output  (let [outputs (c/to-vect (c/sel dataset :cols
+                                                 (:output-cols (:problem-domain es))))]
+                   (if (:decrease-outputs (:problem-domain es))
+                     (mapv dec outputs)
+                     outputs))]
     (run-custom-fitness* ce run-params  f/classification-fitness input output)))
 
 (defn- run-regression
@@ -186,7 +188,8 @@
   (make-ce (make-classification-of "Wine"
                                    (io/read-dataset (str dataset-prefix "wine.data")) 
                                    (range 1 14)
-                                   [0]) 
+                                   [0]
+                                   :decrease-outputs true) 
            {:unary-functions ['halfbias 'doublebias 'addbias 'subbias
                               'addval 'subval  'halfval 'doubleval
                               'inclr 'declr 'wait 'cut 'acttanh
@@ -196,7 +199,8 @@
   (make-ce (make-classification-of "Glass" 
                                    (io/read-dataset (str dataset-prefix "glass.data"))
                                    (range 1 10)
-                                   [10]) 
+                                   [10]
+                                   :decrease-outputs true) 
            {:unary-functions  ['addbias 'subbias 'mult10bias 'mult-1bias
                                'mult0.1bias 'addval 'subval 'mult10val
                                'mult-1val 'mult0.1val 'inclr 'declr
@@ -228,7 +232,7 @@
                               'acttanh 'actsigmoid 'actsgn 'actsin 'actgauss]}))
 
 
- (def ccc (make-maze-reinforcement-learning))
- (run ccc)
- (show-log ccc)
- (plot ccc)
+;; (def ccc (make-maze-reinforcement-learning))
+;; (run ccc)
+;; (show-log ccc)
+;; (plot ccc)
