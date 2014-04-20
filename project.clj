@@ -5,6 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [incanter/incanter "1.5.4"]
-                 [rhizome "0.2.0"]]
+                 [rhizome "0.2.0"]
+                 [seesaw "1.4.4"]
+                 [com.taoensso/nippy "2.6.2"]]
   :java-source-paths ["java/src"]
   :main nef.core)

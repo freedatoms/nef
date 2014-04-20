@@ -15,19 +15,31 @@ public class DiscreteMazeViewer extends JPanel {
     DiscreteMaze dmaze;
     List<MoveAction> actions;
 
-    public DiscreteMazeViewer(DiscreteMaze dmaze, AFn i) {
+    public DiscreteMazeViewer(DiscreteMaze dmaze, AFn i, boolean normalize) {
         this.dmaze = dmaze;
         actions = new LinkedList<>();
         Actor a = dmaze.getNewActor();
         int sp = dmaze.shortestPathToTarget(a.getX(),a.getY());
+	Double[] input;
         for (int j = 0; j < sp * 10; j++) {
-            MoveAction ma = getMoveAction((double[])i.invoke(new Double[]{
-			(double)j/((double)10*sp),
-			((double)dmaze.shortestPathToTarget(a.getX(),a.getY()))/((double)sp),
-			dmaze.lookForward(a)=='w'?0.0:1.0,
-			dmaze.lookLeft(a)=='w'?0.0:1.0,
-			dmaze.lookRight(a)=='w'?0.0:1.0
-                    }));
+	    if (normalize){
+		input = new Double[]{
+		    (double)j/((double)10*sp),
+		    ((double)dmaze.shortestPathToTarget(a.getX(),a.getY()))/((double)sp),
+		    dmaze.lookForward(a)=='w'?0.0:1.0,
+		    dmaze.lookLeft(a)=='w'?0.0:1.0,
+		    dmaze.lookRight(a)=='w'?0.0:1.0
+		};
+	    } else {
+		input = new Double[]{
+		    (double)j,
+		    ((double)dmaze.shortestPathToTarget(a.getX(),a.getY())),
+		    dmaze.lookForward(a)=='w'?0.0:1.0,
+		    dmaze.lookLeft(a)=='w'?0.0:1.0,
+		    dmaze.lookRight(a)=='w'?0.0:1.0
+		};
+	    }
+            MoveAction ma = getMoveAction((double[])i.invoke(input));
             actions.add(ma);
             if (dmaze.move(a,ma)){
                 break;
@@ -57,20 +69,20 @@ public class DiscreteMazeViewer extends JPanel {
         for (int i = 0; i < dmaze.getWidth(); i++) {
             for (int j = 0; j < dmaze.getHeight(); j++) {
                 switch (dmaze.getTile(i,j)){
-                    case 'w':
-                        g2d.setColor(Color.black);
-                        g2d.fillRect(i * w / dmaze.getWidth() ,j * h / dmaze.getHeight(),
-                                w /  dmaze.getWidth()+1 , h / dmaze.getHeight() +1);
+		case 'w':
+		    g2d.setColor(Color.black);
+		    g2d.fillRect(i * w / dmaze.getWidth() ,j * h / dmaze.getHeight(),
+				 w /  dmaze.getWidth()+1 , h / dmaze.getHeight() +1);
                     break;
-                    case 's':
-                        g2d.setColor(new Color(100,255,0));
-                        g2d.fillRect(i * w /  dmaze.getWidth(), j * h / dmaze.getHeight(),
-                                w /  dmaze.getWidth() +1, h / dmaze.getHeight() +1);
+		case 's':
+		    g2d.setColor(new Color(100,255,0));
+		    g2d.fillRect(i * w /  dmaze.getWidth(), j * h / dmaze.getHeight(),
+				 w /  dmaze.getWidth() +1, h / dmaze.getHeight() +1);
                     break;
-                    case 't':
-                        g2d.setColor(new Color(0,100,255));
-                        g2d.fillRect(i * w /  dmaze.getWidth(),j * h / dmaze.getHeight(),
-                                w /  dmaze.getWidth() +1, h / dmaze.getHeight() +1);
+		case 't':
+		    g2d.setColor(new Color(0,100,255));
+		    g2d.fillRect(i * w /  dmaze.getWidth(),j * h / dmaze.getHeight(),
+				 w /  dmaze.getWidth() +1, h / dmaze.getHeight() +1);
                     break;
                 }
             }
@@ -93,7 +105,7 @@ public class DiscreteMazeViewer extends JPanel {
 
             if (ma == MoveAction.FORWARD){
                 g2d.drawLine((xo*w+w/2)/dmaze.getWidth(),(yo*h+h/2)/dmaze.getHeight(),
-                        (a.getX()*w+w/2)/dmaze.getWidth(),(a.getY()*h+h/2)/dmaze.getHeight());
+			     (a.getX()*w+w/2)/dmaze.getWidth(),(a.getY()*h+h/2)/dmaze.getHeight());
             }
         }
     }

@@ -52,8 +52,8 @@
   (let [dataset (c/to-matrix (:data (:problem-domain ce)))
         input (c/to-vect  (c/sel dataset :cols (:input-cols (:problem-domain ce))))
         output  (let [outputs (c/to-vect (c/sel dataset :cols
-                                                 (:output-cols (:problem-domain es))))]
-                   (if (:decrease-outputs (:problem-domain es))
+                                                 (:output-cols (:problem-domain ce))))]
+                   (if (:decrease-outputs (:problem-domain ce))
                      (mapv dec outputs)
                      outputs))]
     (run-custom-fitness* ce run-params  f/classification-fitness input output)))
@@ -75,7 +75,7 @@
    ce
    run-params
    ((:fitness-function (:problem-domain ce)
-    nn/evaluate-ff-net-cell)))
+    nn/evaluate-ff-net-cell))))
 
 (defn- run-maze
   [ce run-params]
@@ -84,7 +84,9 @@
               ce/*lifespan* (:lifespan options 1)
               i/*genome-length* (:initial-genome-length options 10)
               i/*max-genome-length* (:max-genome-length options 50)
-              f/*fitness-function* f/maze-fitness
+              f/*fitness-function*  (if (:normalize (:problem-domain ce)) 
+                                      f/maze-fitness-using-normalized-inputs
+                                      f/maze-fitness)
               t/*binary-function* (:binary-functions options ['seq 'par])
               t/*unary-function* (:unary-functions options ['addbias])
               t/*nullary-function* (:nullary-functions options ['end])]
@@ -101,7 +103,8 @@
                           (fn [ind gen]
                             (let [m (DiscreteMaze.)
                                   net (ce/evaluate-tree-grammar (:genome ind))
-                                  mv (DiscreteMazeViewer. m   (fn [in] (double-array (nn/evaluate-ff-net-cell net in))))
+                                  mv (DiscreteMazeViewer. m  (fn [in] (double-array (nn/evaluate-ff-net-cell net in)))
+                                                          (boolean (:normalize (:problem-domain ce))))
                                   fn (format filename gen (:fitness ind))]
                               (.setTitle fr (str "Maze fitness: " (:fitness ind)))
                               (.removeAll (.getContentPane fr))

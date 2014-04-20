@@ -31,9 +31,10 @@
    :output-cols output-cols})
 
 (defn make-maze 
-  []
+  [&{:keys [normalize]}]
   {:type :maze,
-   :name "Maze"})
+   :name "Maze",
+   :normalize normalize})
 
 (defn make-use-of-custom-fitness 
  "Takes name and unary function which returns fitness function,

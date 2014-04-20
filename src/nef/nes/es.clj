@@ -91,7 +91,8 @@
               (:maze-size run-params 600)
               (:maze-size run-params 600))
     (.evolve (Evolution. (int-array (:topology options (int-array [5 3])))
-                         (MazeFitness. (DiscreteMaze.)))
+                         (MazeFitness. (DiscreteMaze.) 
+                                       (boolean (:normalize (:problem-domain es)))))
              (int (:generations options 100))
              (int (:mu options 15))
              (int (:rho options 4))
@@ -113,7 +114,8 @@
                      mv (DiscreteMazeViewer. m 
                                              (fn [in] 
                                                (double-array
-                                                (.evaluate ind in))))
+                                                (.evaluate ind in)))
+                                             (boolean (:normalize (:problem-domain es))))
                      fn (format filename gen (.getSuccessRate ind))]
                  (.setTitle fr (str "Maze fitness: " (.getSuccessRate ind)))
                  (.removeAll (.getContentPane fr))
@@ -230,7 +232,9 @@
 
 (defn make-maze-reinforcement-learning
   []
-  (make-es (make-maze)
+  (make-es (make-maze
+            :normalize true)
            {:topology [5 8 6 3],
             :mu 10, :rho 4, :lambda 450,
             :commaSelection false}))
+

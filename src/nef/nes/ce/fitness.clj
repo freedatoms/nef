@@ -126,8 +126,34 @@
            not-a-wall (fn [c] (if (= c \w) 0.0 1.0))
            steps (loop [i 0]
                    (if (< i(* 10 s))
-                     (if-not (.move m a  (case (max-pos (nn/evaluate-ff-net-cell etg [i
-                                                                                       (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
+                     (if-not (.move m a  (case (max-pos (nn/evaluate-ff-net-cell etg [i 
+                                                                                      (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
+                                                                                       (not-a-wall (.lookForward m a))
+                                                                                       (not-a-wall (.lookLeft m a))
+                                                                                       (not-a-wall (.lookRight m a))]))
+                                             1 MoveAction/TURN_LEFT
+                                             2 MoveAction/TURN_RIGHT
+                                             MoveAction/FORWARD))
+                       (recur (inc i))
+                       i)
+                     i))]
+       (float (+ 100 (if (.isTarget m a)
+                       (/ s steps)
+                       (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a)))))))))
+
+(defn maze-fitness-using-normalized-inputs
+  "fitness used for maze"
+  ([grammar] (maze-fitness grammar *inputs* *outputs*))
+  ([grammar _ _]
+     (let [etg (ce/evaluate-tree-grammar grammar)
+           m (DiscreteMaze.)
+           a (.getNewActor m)
+           s (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
+           not-a-wall (fn [c] (if (= c \w) 0.0 1.0))
+           steps (loop [i 0]
+                   (if (< i(* 10 s))
+                     (if-not (.move m a  (case (max-pos (nn/evaluate-ff-net-cell etg [(/ i (* 10.0 s))
+                                                                                      (/ (.shortestPathToTarget m ^int (.getX a) ^int (.getY a)) s)
                                                                                        (not-a-wall (.lookForward m a))
                                                                                        (not-a-wall (.lookLeft m a))
                                                                                        (not-a-wall (.lookRight m a))]))
