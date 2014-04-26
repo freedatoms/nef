@@ -145,8 +145,6 @@
                                                              memcnt))) 
                                              (:members spec)))))
                             (:species population)))))
-  (if (== 0 (count (:species @pop)))
-    (prn "chyba7"))
   ;; Calculate basic stats
   (swap! pop
          (fn [population] 

@@ -159,7 +159,7 @@ public class Evolution {
 
             max = Math.max(max, inds[0].getSuccessRate());
 	    maxA[i] = max;
-	    bestIndFunc.invoke(i, inds[0]);
+	    bestIndFunc.invoke(inds[0], i, inds[0].getSuccessRate());
 	    double median=((inds[(int)(Math.floor(mu/2.0))].getSuccessRate() + 
 			    inds[(int)(Math.ceil(mu/2.0))].getSuccessRate()) / 2.0);
 	    log.log(i,

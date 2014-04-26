@@ -59,69 +59,69 @@
                                              (reduce #(+ %1 (Math/abs ^float %2)) 0 
                                                      (mapv #(- %1 %2) evaluated out)))
                                            evals output))
-                             (count evals)))})))
+                             (count evals)))})
 
-(defn maze-fitness
-  "fitness used for maze"
-  [genome]
-  (let [m (DiscreteMaze.)
-        a (.getNewActor m)
-        s (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
-        not-a-wall (fn [c] (if (= c \w) 0.0 1.0))
-        steps (loop [i 0]
-                (if (< i(* 10 s))
-                  (if (.move m a  
-                             (case (maxpos (net/evaluate-neural-net-with-activation-cycles
-                                            genome
-                                            [(double i)
-                                             (double (.shortestPathToTarget m ^int (.getX a) ^int (.getY a)))
-                                             (not-a-wall (.lookForward m a))
-                                             (not-a-wall (.lookLeft m a))
-                                             (not-a-wall (.lookRight m a))]
-                                            100))
-                               1 MoveAction/TURN_LEFT
-                               2 MoveAction/TURN_RIGHT
-                               MoveAction/FORWARD))
-                    i
-                    (recur (inc i)))
-                  i))]
-    {:fitness (float (+ 100 (if (.isTarget m a)
-                              (/ s steps)
-                              (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))
-     :solved (.isTarget m a)
-     :success-rate (float (+ 100 (if (.isTarget m a)
-                                   (/ s steps)
-                                   (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))}))
+    (defn maze-fitness
+      "fitness used for maze"
+      [genome]
+      (let [m (DiscreteMaze.)
+            a (.getNewActor m)
+            s (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
+            not-a-wall (fn [c] (if (= c \w) 0.0 1.0))
+            steps (loop [i 0]
+                    (if (< i(* 10 s))
+                      (if (.move m a  
+                                 (case (maxpos (net/evaluate-neural-net-with-activation-cycles
+                                                genome
+                                                [(double i)
+                                                 (double (.shortestPathToTarget m ^int (.getX a) ^int (.getY a)))
+                                                 (not-a-wall (.lookForward m a))
+                                                 (not-a-wall (.lookLeft m a))
+                                                 (not-a-wall (.lookRight m a))]
+                                                100))
+                                   1 MoveAction/TURN_LEFT
+                                   2 MoveAction/TURN_RIGHT
+                                   MoveAction/FORWARD))
+                        i
+                        (recur (inc i)))
+                      i))]
+        {:fitness (float (+ 100 (if (.isTarget m a)
+                                  (/ s steps)
+                                  (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))
+         :solved (.isTarget m a)
+         :success-rate (float (+ 100 (if (.isTarget m a)
+                                       (/ s steps)
+                                       (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))}))
 
-(defn maze-fitness-using-normalized-inputs
-  "fitness used for maze"
-  [genome]
-  (let [m (DiscreteMaze.)
-        a (.getNewActor m)
-        s (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
-        not-a-wall (fn [c] (if (= c \w) 0.0 1.0))
-        steps (loop [i 0]
-                (if (< i(* 10 s))
-                  (if (.move m a  
-                             (case (maxpos (net/evaluate-neural-net-with-activation-cycles
-                                            genome
-                                            [(double (/ i (* 10 s)))
-                                             (double (/ (.shortestPathToTarget m ^int (.getX a) ^int (.getY a)) 
-                                                       s))
-                                             (not-a-wall (.lookForward m a))
-                                             (not-a-wall (.lookLeft m a))
-                                             (not-a-wall (.lookRight m a))]
-                                            100))
-                               1 MoveAction/TURN_LEFT
-                               2 MoveAction/TURN_RIGHT
-                               MoveAction/FORWARD))
-                    i
-                    (recur (inc i)))
-                  i))]
-    {:fitness (float (+ 100 (if (.isTarget m a)
-                              (/ s steps)
-                              (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))
-     :solved (.isTarget m a)
-     :success-rate (float (+ 100 (if (.isTarget m a)
-                                   (/ s steps)
-                                   (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))}))
+    (defn maze-fitness-using-normalized-inputs
+      "fitness used for maze"
+      [genome]
+      (let [m (DiscreteMaze.)
+            a (.getNewActor m)
+            s (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))
+            not-a-wall (fn [c] (if (= c \w) 0.0 1.0))
+            steps (loop [i 0]
+                    (if (< i(* 10 s))
+                      (if (.move m a  
+                                 (case (maxpos (net/evaluate-neural-net-with-activation-cycles
+                                                genome
+                                                [(double (/ i (* 10 s)))
+                                                 (double (/ (.shortestPathToTarget m ^int (.getX a) ^int (.getY a)) 
+                                                            s))
+                                                 (not-a-wall (.lookForward m a))
+                                                 (not-a-wall (.lookLeft m a))
+                                                 (not-a-wall (.lookRight m a))]
+                                                100))
+                                   1 MoveAction/TURN_LEFT
+                                   2 MoveAction/TURN_RIGHT
+                                   MoveAction/FORWARD))
+                        i
+                        (recur (inc i)))
+                      i))]
+        {:fitness (float (+ 100 (if (.isTarget m a)
+                                  (/ s steps)
+                                  (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))
+         :solved (.isTarget m a)
+         :success-rate (float (+ 100 (if (.isTarget m a)
+                                       (/ s steps)
+                                       (- (.shortestPathToTarget m ^int (.getX a) ^int (.getY a))))))}))))

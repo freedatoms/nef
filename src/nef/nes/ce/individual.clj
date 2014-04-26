@@ -1,8 +1,7 @@
 (ns nef.nes.ce.individual
   (:gen-class)
   (:require [nef.nes.ce
-             [tree :as t]
-             [fitness :as f]]
+             [tree :as t]]
             [nef.nes.ce [cellular-encoding-j :refer [ce->neural-net]]]
             [rhizome.viz :as viz]
             [clojure
@@ -22,6 +21,8 @@
 (def ^:dynamic *mutation-rate*
   "Mutation rate is probability that allele mutates"
   0.005)
+
+(def ^:dynamic *fitness-function* "Fitness function for evolution")
 
 (defrecord ^{:doc "An individual is represented by the genome and the fitness"}
     Individual
@@ -45,7 +46,7 @@
   (if (and genome fitness)
     (->Individual genome fitness)
     (let [g (or genome (t/generate-tree genome-length))
-          fitness  (f/fitness g)]
+          fitness  (*fitness-function* g)]
       (->Individual g fitness))))
 
 (defn mutate [ind]

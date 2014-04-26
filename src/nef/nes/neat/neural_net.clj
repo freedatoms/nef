@@ -2,8 +2,6 @@
   (:use [nef.nes.neat
          evolution-parameters]))
 
-(set! *warn-on-reflection* true)
-
 (defn- doubles-map-to-with-diff
   [fun ^doubles from ^doubles to
    & {:keys [starting-index]

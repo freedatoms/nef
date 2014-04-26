@@ -1,7 +1,6 @@
 (ns nef.nes.ce.evolution
   (:require [nef.nes.ce
              [cellular-encoding-j :as ce]
-             [fitness :as f]
              [population :as p]
              [individual :as i]]
             [rhizome [viz :as viz]]

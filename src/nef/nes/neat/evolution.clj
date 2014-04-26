@@ -52,11 +52,10 @@
       (if (> i 0)
         (let [stats (last (:stats (pop/evolve population)))
               max-fitness (apply max (mapv :max-fitness (:species stats)))]
-          (printf (str "Generation: %d Species count: %d solved: %d "
+          (printf (str "Generation: %d Species count: %d "
                        "Best fitness: %s Avg fitness: %f dt: %f innov: %d success-rate: %f maximal-success-rate: %f\n")
                   (:generation stats)
                   (count (:species stats))
-                  (count (:solutions stats))
                   max-fitness
                   (mean (mapv  :avg-fitness (:species stats)))
                   (:current-dt stats)
@@ -67,7 +66,6 @@
           (send-off log conj {:generation (:generation stats),
                               :performance (double (or (:success-rate stats) max-fitness)),
                               :species-count (count (:species stats)),
-                              :solved (count (:solutions stats)),
                               :max-fitness max-fitness,
                               :mean-fitness (mean (mapv  :avg-fitness (:species stats))),
                               :current-dt (:current-dt stats),
@@ -76,7 +74,7 @@
                                                                               max-fitness))  
                                                                   max-success)})
           (let [most-succ (:most-successful stats)]
-            (do-with-best most-succ (format filename (:generation stats) (float (:success-rate most-succ))))
+            (do-with-best most-succ (:generation stats) (double (:success-rate most-succ)))
             (if save-individuals
               (u/freeze-to-file (str (format filename (:generation stats) (float (:success-rate most-succ))) ".ind") most-succ))
             (when save-images
