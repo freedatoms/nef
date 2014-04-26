@@ -111,7 +111,8 @@
 
 (defrecord Maze
     [normalize-inputs
-     options]
+     save-images
+     filename-format]
   ProblemDomain
   (get-fitness-function [this evaluator]
     (fn [individual]
@@ -158,8 +159,8 @@
           (.add (.getContentPane fr) mv)
           (when (not (.isShowing fr))
             (.setVisible fr true))
-          (when (:save-images options)
-            (.saveImage mv (format (:filename-format options) generation fitness) 800 800))
+          (when save-images
+            (.saveImage mv (format filename-format generation fitness) 800 800))
           (.revalidate fr)))))
 
   (get-name [this]
@@ -168,7 +169,26 @@
   (get-experiment-name [this]
     "Maze"))
 
-
 (defn make-maze
-  [&{:keys [normalize-inputs options]}]
-  (Maze. normalize-inputs options))
+  [&{:keys [normalize-inputs save-images filename-format]}]
+  (Maze. normalize-inputs save-images filename-format))
+
+
+(defrecord CustomFitness
+    [name 
+     experiment-name
+     fitness
+     do-with-best]
+  ProblemDomain
+  (get-fitness-function [this evaluator]
+    (fitness evaluator))
+
+  (get-do-with-best-individual-function [this evaluator]
+    (do-with-best evaluator))
+
+  (get-name [this]
+    name)
+
+  (get-experiment-name [this]
+    experiment-name))
+

@@ -55,10 +55,7 @@
                             :median-performance medianperf,
                             :performance maxperf-since-gen0,
                             :max-performance-since-begining maxperf-since-gen0})))
-             (fn [ind gen fit]
-               (prn ind gen fit)
-               (do-with-best
-                ind gen fit)))))
+             do-with-best)))
 
 (defrecord ES
     [problem-domain

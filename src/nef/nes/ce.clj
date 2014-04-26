@@ -173,7 +173,7 @@
                               'acttanh 'actsigmoid 'actsgn 'actsin 'actgauss]}))
 
 
-;; (def ccc (make-maze-reinforcement-learning))
-;; (run ccc)
+;;(def ccc (make-iris-classification))
+;;(run ccc)
 ;; (show-log ccc)
 ;; (plot ccc)

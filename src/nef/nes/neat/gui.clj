@@ -66,29 +66,30 @@
                      (new-settings (:id opt)))
               (ref-set (:var opt) (new-settings (:id opt))))))))
 
+(defn get-settings []
+  (into {} (mapv (fn [opt]
+                   (if (#{:float :int :range :any-of :boolean} (:type opt))
+                     (vector (:id opt) @(:var opt))))  @ep/options)))
+
 (defn print-settings
   []
-  (prn (into {} (mapv (fn [opt]
-                        (if (#{:float :int :range :any-of :boolean} (:type opt))
-                          (vector (:id opt) @(:var opt))))  @ep/options))))
+  (prn (get-settings)))
 
 (defn- create-options
   []
-  (let [widgets (into (vec (mapcat create-option-widget @ep/options))
-                      ["" (sc/button :id :set :text "set")])
+  (let [widgets (vec (mapcat create-option-widget @ep/options))
         panel (sc/grid-panel :columns 2 :items widgets)]
-    (sc/listen (sc/select panel [:#set])
-               :action
-               (fn [e] 
-                 (set-new-settings (get-new-settings panel))
-                 (sc/alert "New settings has been applied.")))
     panel))
 
 (defn show-options
   []
-  (-> (sc/frame :content (sc/scrollable (create-options)) :title "Settings")
-      sc/pack!
-      sc/show!))
+  (let [panel (create-options)]
+    (-> (sc/dialog :content (sc/scrollable panel) :title "Settings"
+                   :option-type :ok-cancel
+                   :success-fn  (fn [e] 
+                                  (set-new-settings (get-new-settings panel))))
+        sc/pack!
+        sc/show!)))
 
 
 
