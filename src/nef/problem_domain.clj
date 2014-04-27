@@ -12,6 +12,8 @@
             MoveAction]
            javax.swing.JFrame))
 
+(def dataset-prefix (atom ""))
+
 (defprotocol ProblemDomain
   (get-fitness-function [this evaluator] 
     "Returns fitness function that takes [individual] 

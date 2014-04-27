@@ -62,7 +62,10 @@
     (await (:log this)))
 
   (save-log-to-csv [this filename]
-    (co/save (get-log this) filename))
+    (try
+      (co/save (get-log this) filename)
+      (catch Exception e
+        (println e))))
 
   (show-log [this]
     (co/view @(:log this)))
@@ -97,13 +100,11 @@
 (defn make-neat [problem-domain options]
   (NEAT. problem-domain options (agent [])))
 
-(def dataset-prefix "/home/frydatom/Dokumenty/FIT/Bakalářka/Implementace/datasets/")
-
 (defn make-iris-classification
   []
   (make-neat (make-classification
               :experiment-name"Iris"
-              :dataset (io/read-dataset (str dataset-prefix "iris.data"))
+              :dataset (io/read-dataset (str @dataset-prefix "iris.data"))
               :input-cols [0 1 2 3] 
               :output-col [4]
               :normalize-inputs true) 
@@ -149,7 +150,7 @@
   []
   (make-neat (make-classification
               :experiment-name"Wine"
-              :dataset (io/read-dataset (str dataset-prefix "wine.data")) 
+              :dataset (io/read-dataset (str @dataset-prefix "wine.data")) 
               :input-cols (range 1 14)
               :output-col [0]
               :normalize-inputs true
@@ -195,7 +196,7 @@
   []
   (make-neat (make-classification
               :experiment-name"Glass" 
-              :dataset (io/read-dataset (str dataset-prefix "glass.data"))
+              :dataset (io/read-dataset (str @dataset-prefix "glass.data"))
               :input-cols (range 1 10)
               :output-col [10]
               :normalize-inputs true
@@ -242,7 +243,7 @@
   []
   (make-neat (make-regression
               :experiment-name"Yacht Hydrodynamics"
-              :dataset (io/read-dataset (str dataset-prefix 
+              :dataset (io/read-dataset (str @dataset-prefix 
                                              "yacht_hydrodynamics.data")
                                         :delim \space)
               :input-cols (range 0 6)

@@ -9,7 +9,9 @@
              [problem-domain :as pd]]
             [incanter
              [core :as c]
-             [io :as io]]))
+             [io :as io]])
+  (:use nef.neprotocol)
+  (:import java.io.File))
 
 (def registered-algorithms
   (atom ["neat" "ce" "es"]))
@@ -54,6 +56,16 @@
   (println (str prompt ":"))
   (clojure.string/trim-newline (read-line)))
 
+(defn- read-a-filename [prompt]
+  (println (str prompt ":"))
+  (let [fn (clojure.string/trim (read-line))
+        f (File. fn)]
+    (try
+      (.getCanonicalPath f)
+      fn
+      (catch Exception e
+          (read-a-filename prompt)))))
+
 (defn- read-a-number [prompt]
   (println (str prompt ":"))
   (loop [num (read-string (read-line))]
@@ -65,7 +77,7 @@
   (println)
   (println "== Customize Classification ==")
   (let [experiment-name (read-a-string "Enter experiment name")
-        dataset-filename (read-a-string "Enter data set filename")
+        dataset-filename (read-a-filename "Enter data set filename")
         delimeter (read-option "Choose a delimeter:"
                                [\, \  \; \tab])
         input-cols (read-string
@@ -92,7 +104,7 @@
   (println)
   (println "== Customize Regression ==")
   (let [experiment-name (read-a-string "Enter experiment name")
-        dataset-filename (read-a-string "Enter data set filename")
+        dataset-filename (read-a-filename "Enter data set filename")
         delimeter (read-option "Choose a delimeter:"
                                [\, \  \; \tab])
         input-cols (read-string
@@ -230,6 +242,19 @@
   (neat/make-maze-reinforcement-learning))
 
 
+(defn- run-loop [ne]
+  (let [option (read-option "Choose what to do:" ["Save the log to a csv file"
+                                                  "Show the log"
+                                                  "Plot the log"
+                                                  "quit"])]
+    (case option
+      "Save the log to a csv file" (save-log-to-csv ne (read-a-filename "File name: (e.g., /tmp/mylog.csv)"))
+      "Show the log" (show-log ne)
+      "Plot the log" (plot ne) ;; TODO: options
+      "quit" (do
+               (println "Quitting...")
+               (System/exit 0)))
+    (recur ne)))
 
 
 (defn repl
@@ -244,16 +269,17 @@
      ""]
     ))
   (let [alg (read-option "Choose one from:"
-                         @registered-algorithms)]
-    (println)
-    (let [type (read-option "You can choose one of the following problem domains:"
-                            ["Classification", "Regression", "Maze", "Custom"])]
-      (case type
-        "Classification" (dispatch alg type (read-option "Choose one of the following:"
-                                                         ["iris" "wine" "glass" "Custom"]))
-        "Regression" (dispatch alg type (read-option "Choose one of the following:"
-                                                     ["Yacht Hydrodynamics" "Custom"]))
-        "Maze" (dispatch alg type (read-option "Choose one of the following:"
-                                                     ["maze" "Custom"]))
-        (dispatch alg type nil)))))
+                         @registered-algorithms)
+        type (read-option "You can choose one of the following problem domains:"
+                          ["Classification", "Regression", "Maze", "Custom"])
+        ne (case type
+             "Classification" (dispatch alg type (read-option "Choose one of the following:"
+                                                              ["iris" "wine" "glass" "Custom"]))
+             "Regression" (dispatch alg type (read-option "Choose one of the following:"
+                                                          ["Yacht Hydrodynamics" "Custom"]))
+             "Maze" (dispatch alg type (read-option "Choose one of the following:"
+                                                    ["maze" "Custom"]))
+             (dispatch alg type nil))]
+    (run ne) ;; TODO: Let choose run params
+    (run-loop ne)))
 
